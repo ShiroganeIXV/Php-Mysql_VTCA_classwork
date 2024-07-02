@@ -8,14 +8,23 @@ if(isset($_POST['create'])) {
     $home_address = $_POST['home_address'];
     $phone_number = $_POST['phone_number'];
 
-    $sql = "INSERT INTO Lab05 (fullname, email, home_address, phone_number) VALUES ('$fullname', '$email', '$home_address', '$phone_number')";
-    if ($conn->query($sql) === TRUE) {
-        // redirect to index.php
-        echo "New record created successfully";
-        header('Location: index.php');
-        
+    // Check if email already exists
+    $emailCheckSql = "SELECT email FROM Lab05 WHERE email = '$email'";
+    $emailCheckResult = $conn->query($emailCheckSql);
+
+    if ($emailCheckResult->num_rows > 0) {
+        // Email exists, handle accordingly
+        echo "Email already exists. <a href='index.php'>Go back</a>";
+        // Optionally, redirect back to the form or handle the error as needed
     } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+        // Email does not exist, proceed with insertion
+        $sql = "INSERT INTO Lab05 (fullname, email, home_address, phone_number) VALUES ('$fullname', '$email', '$home_address', '$phone_number')";
+        if ($conn->query($sql) === TRUE) {
+            echo "New record created successfully";
+            header('Location: index.php');
+        } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
     }
 }
 

@@ -71,9 +71,23 @@
                 <?php
                 include 'crud.php';
 
-                $sql = "SELECT id, fullname, email, home_address, phone_number FROM Lab05";
+                // TODO SQL for pagination
+                $limit = 3;
+                if (isset($_GET['page'])) {
+                  $page = $_GET['page'];
+                } else {
+                    $page = 1;
+                }
+                $start = ($page - 1) * $limit;
+
+                $sql = "SELECT id, fullname, email, home_address, phone_number FROM Lab05 LIMIT $start, $limit";
                 $result = $conn->query($sql);
 
+                // Calculate total pages
+                $totalResults = $conn->query("SELECT COUNT(id) FROM Lab05")->fetch_row()[0];
+                $totalPages = ceil($totalResults / $limit);
+                
+                // Fetch limited set of records
                 if ($result->num_rows > 0) {
                     while($row = $result->fetch_assoc()) {
                         echo "<tr>
@@ -176,6 +190,14 @@
     </form>
   </div>
 </div>
+
+<!-- pagination -->
+ <div class="d-flex justify-content-center">
+  <?php
+    include 'pagination.php';
+  ?>
+ </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
